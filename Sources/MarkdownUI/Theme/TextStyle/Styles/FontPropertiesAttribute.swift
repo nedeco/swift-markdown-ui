@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 enum FontPropertiesAttribute: AttributedStringKey {
   typealias Value = FontProperties
@@ -27,15 +28,22 @@ extension AttributeDynamicLookup {
 extension AttributedString {
   func resolvingFonts() -> AttributedString {
     var output = self
-
+    if !AttributedString.shouldResolveFonts {
+      return output
+    }
     for run in output.runs {
       guard let fontProperties = run.fontProperties else {
         continue
       }
+
       output[run.range].font = .withProperties(fontProperties)
       output[run.range].fontProperties = nil
     }
 
     return output
   }
+}
+
+extension AttributedString {
+    nonisolated(unsafe) public static var shouldResolveFonts = true
 }
